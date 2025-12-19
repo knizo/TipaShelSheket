@@ -1,4 +1,3 @@
-
 import { User, ContentItem, LessonSlot, QAItem, AppSettings, UserRole } from '../types';
 import { INITIAL_USERS, INITIAL_CONTENT, INITIAL_SCHEDULE, INITIAL_QA } from '../constants';
 import { initializeApp } from "firebase/app";
@@ -15,15 +14,15 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID"
 };
 
-// Check if config is provided to avoid crash
 let dbInstance: any = null;
 try {
-  if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+  // Only initialize if the user has replaced placeholder values
+  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
     const app = initializeApp(firebaseConfig);
     dbInstance = getFirestore(app);
   }
 } catch (e) {
-  console.warn("Firebase not initialized. Falling back to robust localStorage sync.");
+  console.warn("Firebase initialization failed. Falling back to local synchronization.", e);
 }
 
 const DB_KEYS = {
@@ -64,8 +63,10 @@ const get = <T>(key: string, defaultVal: T): T => {
 
 const set = <T>(key: string, val: T) => {
   localStorage.setItem(key, JSON.stringify(val));
-  // If Firebase is available, we would write to it here as well
-  // await setDoc(doc(dbInstance, "app_state", key), { data: val });
+  // If Firebase is configured, sync the global state document
+  if (dbInstance) {
+    setDoc(doc(dbInstance, "app_state", key), { data: val }).catch(console.error);
+  }
   notifyChanges();
 };
 
@@ -73,7 +74,7 @@ export const db = {
   subscribe: (callback: ChangeListener) => {
     listeners.add(callback);
     
-    // 1. Storage event (other tabs/windows in same browser)
+    // Handle changes from other tabs in the same browser
     const storageHandler = (e: StorageEvent) => {
       if (Object.values(DB_KEYS).includes(e.key || '')) {
         callback();
@@ -81,18 +82,28 @@ export const db = {
     };
     window.addEventListener('storage', storageHandler);
 
-    // 2. Firebase Realtime Subscription (Cross-device)
-    // This allows devices in different networks to see the same data
-    let unsubFirebase: any = null;
+    // Handle cross-device changes via Firebase if available
+    let unsubFirebase: any[] = [];
     if (dbInstance) {
-      // In a real implementation, we'd subscribe to collections here
-      // Example: onSnapshot(collection(dbInstance, "users"), () => callback());
+      Object.values(DB_KEYS).forEach(key => {
+        const unsub = onSnapshot(doc(dbInstance, "app_state", key), (doc) => {
+          if (doc.exists()) {
+            const remoteData = doc.data().data;
+            const localData = localStorage.getItem(key);
+            if (JSON.stringify(remoteData) !== localData) {
+              localStorage.setItem(key, JSON.stringify(remoteData));
+              callback();
+            }
+          }
+        });
+        unsubFirebase.push(unsub);
+      });
     }
 
     return () => { 
       listeners.delete(callback);
       window.removeEventListener('storage', storageHandler);
-      if (unsubFirebase) unsubFirebase();
+      unsubFirebase.forEach(unsub => unsub());
     };
   },
 
