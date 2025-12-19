@@ -1,0 +1,8 @@
+{
+  "name": "TipaShelSheket_app",
+  "description": "A serene Yoga studio application allowing teachers to manage content and students to book lessons.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
