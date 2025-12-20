@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,70 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>TipaShelSheket</title>
     <link rel="manifest" href="/manifest.json">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: {
-                50: 'var(--color-primary-50)',
-                100: 'var(--color-primary-100)',
-                200: 'var(--color-primary-200)',
-                300: 'var(--color-primary-300)',
-                400: 'var(--color-primary-400)',
-                500: 'var(--color-primary-500)',
-                600: 'var(--color-primary-600)',
-                700: 'var(--color-primary-700)',
-                800: 'var(--color-primary-800)',
-                900: 'var(--color-primary-900)',
-              },
-              secondary: {
-                50: 'var(--color-secondary-50)',
-                100: 'var(--color-secondary-100)',
-                200: 'var(--color-secondary-200)',
-                300: 'var(--color-secondary-300)',
-                400: 'var(--color-secondary-400)',
-                500: 'var(--color-secondary-500)',
-                600: 'var(--color-secondary-600)',
-                700: 'var(--color-secondary-700)',
-                800: 'var(--color-secondary-800)',
-                900: 'var(--color-secondary-900)',
-              }
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-      :root {
-        --color-primary-50: #fdf2f8;
-        --color-primary-100: #fce7f3;
-        --color-primary-200: #fbcfe8;
-        --color-primary-300: #f9a8d4;
-        --color-primary-400: #f472b6;
-        --color-primary-500: #ec4899;
-        --color-primary-600: #db2777;
-        --color-primary-700: #be185d;
-        --color-primary-800: #9d174d;
-        --color-primary-900: #831843;
-
-        --color-secondary-50: #f0f9ff;
-        --color-secondary-100: #e0f2fe;
-        --color-secondary-200: #bae6fd;
-        --color-secondary-300: #7dd3fc;
-        --color-secondary-400: #38bdf8;
-        --color-secondary-500: #0ea5e9;
-        --color-secondary-600: #0284c7;
-        --color-secondary-700: #0369a1;
-        --color-secondary-800: #075985;
-        --color-secondary-900: #0c4a6e;
-      }
-      ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
   <script type="importmap">
 {
   "imports": {
@@ -84,9 +21,8 @@
 }
 </script>
 </head>
-  <body class="bg-gray-100 text-gray-800 antialiased overflow-hidden">
+  <body>
     <div id="root"></div>
-    <!-- Vite will handle the transformation of this TSX file -->
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
