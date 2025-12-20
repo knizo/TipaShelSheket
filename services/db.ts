@@ -1,10 +1,9 @@
 import { User, ContentItem, LessonSlot, QAItem, AppSettings, UserRole } from '../types';
 import { INITIAL_USERS, INITIAL_CONTENT, INITIAL_SCHEDULE, INITIAL_QA } from '../constants';
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, onSnapshot, setDoc, collection, getDocs, updateDoc, deleteDoc } from "firebase/firestore";
+import { getFirestore, doc, onSnapshot, setDoc } from "firebase/firestore";
 
 // --- FIREBASE CONFIGURATION ---
-// IMPORTANT: Replace with your actual Firebase project configuration found in Project Settings.
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -16,7 +15,6 @@ const firebaseConfig = {
 
 let dbInstance: any = null;
 try {
-  // Only initialize if the user has replaced placeholder values
   if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
     const app = initializeApp(firebaseConfig);
     dbInstance = getFirestore(app);
@@ -63,7 +61,6 @@ const get = <T>(key: string, defaultVal: T): T => {
 
 const set = <T>(key: string, val: T) => {
   localStorage.setItem(key, JSON.stringify(val));
-  // If Firebase is configured, sync the global state document
   if (dbInstance) {
     setDoc(doc(dbInstance, "app_state", key), { data: val }).catch(console.error);
   }
@@ -73,8 +70,6 @@ const set = <T>(key: string, val: T) => {
 export const db = {
   subscribe: (callback: ChangeListener) => {
     listeners.add(callback);
-    
-    // Handle changes from other tabs in the same browser
     const storageHandler = (e: StorageEvent) => {
       if (Object.values(DB_KEYS).includes(e.key || '')) {
         callback();
@@ -82,7 +77,6 @@ export const db = {
     };
     window.addEventListener('storage', storageHandler);
 
-    // Handle cross-device changes via Firebase if available
     let unsubFirebase: any[] = [];
     if (dbInstance) {
       Object.values(DB_KEYS).forEach(key => {
